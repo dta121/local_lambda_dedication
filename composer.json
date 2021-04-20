@@ -1,0 +1,23 @@
+{
+    "name": "lambdasolutions/local_lambda_dedication",
+    "description": "Time Spent Learning",
+    "homepage": "https://www.zoola.io",
+    "keywords": ["zoola", "moodle", "reporting", "analytics"],
+    "type": "moodle-local",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Branko Vukasovic",
+            "email": "branko.vukasovic@lambdasolutions.net"
+        }
+    ],
+    "extra": {
+        "installer-name": "lambda_dedication"
+    },
+    "require": {
+        "composer/installers": "~1.0"
+    },
+    "support": {
+        "email": "support@lambdasolutions.net"
+    }
+}

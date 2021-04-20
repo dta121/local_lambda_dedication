@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/lambda_dedication/db" VERSION="20150918" COMMENT="XMLDB file for Moodle local/lambda_dedication"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_ld_lastactivity" COMMENT="Last activity that user has performed">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the user table"/>
+        <FIELD NAME="lastaccess" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="When the activity has occurred"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Coursemodule id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid" UNIQUE="true" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ld_course" COMMENT="Total time spent within a course">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the user"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the course"/>
+        <FIELD NAME="totaldedication" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Total time that user spent within the course, in seconds"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="course" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id" COMMENT="Foreign key to the course"/>
+        <KEY NAME="user" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="Foreign key to the user"/>
+        <KEY NAME="user_course" TYPE="unique" FIELDS="userid, courseid"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_ld_course_day" COMMENT="Time spent on a course at day level">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ldcourseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the local_ld_course table"/>
+        <FIELD NAME="daytime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp of the beginning of the day"/>
+        <FIELD NAME="day" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Day formatted as 'YYYY-MM-DD'"/>
+        <FIELD NAME="dedication" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time spent on course within this day"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ld_course" TYPE="foreign" FIELDS="ldcourseid" REFTABLE="local_ld_course" REFFIELDS="id" COMMENT="Foreign key to the local_ld_course table"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="daytime" UNIQUE="true" FIELDS="ldcourseid, daytime"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ld_module" COMMENT="Time spent on a module">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ldcourseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the local_ld_course table"/>
+        <FIELD NAME="coursemoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the course_modules table"/>
+        <FIELD NAME="totaldedication" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Total time spent on this module, in seconds"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ld_course" TYPE="foreign" FIELDS="ldcourseid" REFTABLE="local_ld_course" REFFIELDS="id" COMMENT="Foreign key to the local_ld_course table"/>
+        <KEY NAME="coursemodule" TYPE="foreign" FIELDS="coursemoduleid" REFTABLE="course_modules" REFFIELDS="id" COMMENT="Foreign key to the course_modules table"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="coursemodule" UNIQUE="true" FIELDS="ldcourseid, coursemoduleid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ld_module_day" COMMENT="Time spent on a module at day level">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="ldmoduleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to the local_ld_module table"/>
+        <FIELD NAME="daytime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Timestamp of the beginning of the day"/>
+        <FIELD NAME="day" TYPE="char" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Day formatted as 'YYYY-MM-DD'"/>
+        <FIELD NAME="dedication" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Time spent on module within this day"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="ld_module" TYPE="foreign" FIELDS="ldmoduleid" REFTABLE="local_ld_module" REFFIELDS="id" COMMENT="Foreign key to the local_ld_module table"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="daytime" UNIQUE="true" FIELDS="ldmoduleid, daytime"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_ld_import_logs_status" COMMENT="Current status of the import logs task">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="adhoctaskid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Import logs task id"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="notscheduled" SEQUENCE="false" COMMENT="Current status of the import log task ('notscheduled', 'scheduled', 'inprogress', 'finished')"/>
+        <FIELD NAME="progress" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.0" SEQUENCE="false" DECIMALS="2" COMMENT="Percentage of work done (0 - 100)"/>
+        <FIELD NAME="timestarted" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="When the import logs task started"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Time of last status update. Used to predict remaining time left."/>
+        <FIELD NAME="timefinished" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="When the import logs tash finished"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="task_adhoc" TYPE="foreign" FIELDS="adhoctaskid" REFTABLE="task_adhoc" REFFIELDS="id" COMMENT="Foreign key to the task_adhoc table"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
